@@ -46,6 +46,7 @@ def player_animation():
             player_index = 0
         player_surf = player_walk[int(player_index)]
 
+
 pygame.init()
 screen = pygame.display.set_mode((800, 400))
 pygame.display.set_caption('Runboy')
@@ -62,7 +63,12 @@ ground = pygame.image.load('ground.png').convert()
 # score_rect = score_surf.get_rect(center=(400, 25))
 
 # Obstacles
-scorpion_surf = pygame.image.load('graphics/scorpion/scorpion12.png').convert_alpha()
+fiend_frame_1 = pygame.image.load('graphics/fiend/f_1.png').convert_alpha()
+fiend_frame_2 = pygame.image.load('graphics/fiend/f_2.png').convert_alpha()
+fiend_frames = [fiend_frame_1, fiend_frame_2]
+fiend_frame_index = 0
+fiend_surf = fiend_frames[fiend_frame_index]
+
 beast_surf = pygame.image.load('graphics/beast/beast1.png').convert_alpha()
 
 obstacle_rect_list = []
@@ -91,6 +97,9 @@ game_message_rect = game_message.get_rect(center=(400, 370))
 obstacle_timer = pygame.USEREVENT + 1
 pygame.time.set_timer(obstacle_timer, 1400)
 
+scorpion_animation_timer = pygame.USEREVENT + 2
+pygame.time.set_timer(scorpion_animation_timer, 500)
+
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -107,11 +116,17 @@ while True:
 
                 start_time = int(pygame.time.get_ticks() / 1000)
 
-        if event.type == obstacle_timer and game_active:
-            if randint(0,2):
-                obstacle_rect_list.append(scorpion_surf.get_rect(bottomright=(randint(900, 1100), 320)))
-            else:
-                obstacle_rect_list.append(beast_surf.get_rect(bottomright=(randint(900, 1100), 200)))
+        if game_active:
+            if event.type == obstacle_timer and game_active:
+                if randint(0,2):
+                    obstacle_rect_list.append(fiend_surf.get_rect(bottomright=(randint(900, 1100), 320)))
+                else:
+                    obstacle_rect_list.append(beast_surf.get_rect(bottomright=(randint(900, 1100), 200)))
+            if event.type == scorpion_animation_timer:
+                if fiend_frame_index == 0:
+                    fiend_frame_index = 1
+                else: fiend_frame_index = 0
+                scorpion_surf = fiend_frames[fiend_frame_index]
 
     if game_active:
         screen.blit(back_surface, (0, 0))
