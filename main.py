@@ -2,6 +2,7 @@ import pygame
 from sys import exit
 from random import randint
 
+
 def display_score():
     current_time = int(pygame.time.get_ticks() / 1000) - start_time
     score_surf = test_font.render(f'Score: {current_time}', True, ('Green'))
@@ -15,12 +16,23 @@ def obstacle_movement(obstacle_list):
         for obstacle_rect in obstacle_list:
             obstacle_rect.x -= 5
 
-            screen.blit(scorpion_surf, obstacle_rect)
+            if obstacle_rect.bottom == 320:
+                screen.blit(scorpion_surf, obstacle_rect)
+            else:
+                screen.blit(beast_surf, obstacle_rect)
 
         obstacle_list = [obstacle for obstacle in obstacle_list if obstacle.x > -100]
 
         return obstacle_list
     else: return []
+
+
+def collisions(player, obstacles):
+    if obstacles:
+        for obstacle_rect in obstacles:
+            if player.colliderect(obstacle_rect):
+                return False
+    return True
 
 pygame.init()
 screen = pygame.display.set_mode((800, 400))
@@ -108,10 +120,14 @@ while True:
         obstacle_rect_list = obstacle_movement(obstacle_rect_list)
 
         # collision
+        game_active = collisions(player_rect, obstacle_rect_list)
 
     else:
         screen.fill((47, 7, 99))
         screen.blit(player_dead, player_dead_rect)
+        obstacle_rect_list.clear()
+        player_rect.midbottom = (80, 320)
+        player_gravity = 0
 
         score_message = test_font.render(f'Your score: {score}', True, (181, 2, 2))
         score_message_rect = score_message.get_rect(center=(400, 320))
