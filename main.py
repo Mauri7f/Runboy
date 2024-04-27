@@ -59,9 +59,6 @@ score = 0
 back_surface = pygame.image.load('background.png').convert()
 ground = pygame.image.load('ground.png').convert()
 
-# score_surf = test_font.render('Score: ', True, 'Green')
-# score_rect = score_surf.get_rect(center=(400, 25))
-
 # Obstacles
 fiend_frame_1 = pygame.image.load('graphics/fiend/f_1.png').convert_alpha()
 fiend_frame_2 = pygame.image.load('graphics/fiend/f_2.png').convert_alpha()
@@ -132,15 +129,7 @@ while True:
         screen.blit(back_surface, (0, 0))
         screen.blit(ground, (0, 320))
         screen.blit(ground, (400, 320))
-        # pygame.draw.rect(screen, 'Black', score_rect)
-        # pygame.draw.rect(screen, 'Black', score_rect, 20)
-        # screen.blit(score_surf, score_rect)
         score = display_score()
-
-        # scorpion_rect.x -= 5
-        # if scorpion_rect.right <= 0:
-        #     scorpion_rect.left = 800
-        # screen.blit(scorpion_surf, scorpion_rect)
 
         # Player
         player_gravity += 1
@@ -168,7 +157,6 @@ while True:
         screen.blit(score_message, score_message_rect)
         screen.blit(game_name, game_name_rect)
         screen.blit(game_message, game_message_rect)
-
 
     pygame.display.update()
     clock.tick(60)
