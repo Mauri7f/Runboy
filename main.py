@@ -1,12 +1,26 @@
 import pygame
 from sys import exit
+from random import randint
 
 def display_score():
     current_time = int(pygame.time.get_ticks() / 1000) - start_time
     score_surf = test_font.render(f'Score: {current_time}', True, ('Green'))
     score_rect = score_surf.get_rect(center=(400, 25))
     screen.blit(score_surf, score_rect)
+    return current_time
 
+
+def obstacle_movement(obstacle_list):
+    if obstacle_list:
+        for obstacle_rect in obstacle_list:
+            obstacle_rect.x -= 5
+
+            screen.blit(scorpion_surf, obstacle_rect)
+
+        obstacle_list = [obstacle for obstacle in obstacle_list if obstacle.x > -100]
+
+        return obstacle_list
+    else: return []
 
 pygame.init()
 screen = pygame.display.set_mode((800, 400))
@@ -15,6 +29,7 @@ clock = pygame.time.Clock()
 test_font = pygame.font.Font(None, 50)
 game_active = True
 start_time = 0
+score = 0
 
 back_surface = pygame.image.load('background.png').convert()
 ground = pygame.image.load('ground.png').convert()
@@ -22,9 +37,11 @@ ground = pygame.image.load('ground.png').convert()
 # score_surf = test_font.render('Score: ', True, 'Green')
 # score_rect = score_surf.get_rect(center=(400, 25))
 
-
+# Obstacles
 scorpion_surf = pygame.image.load('graphics/scorpion/scorpion12.png').convert_alpha()
-scorpion_rect = scorpion_surf.get_rect(midbottom=(600, 320))
+beast_surf = pygame.image.load('graphics/beast/beast1.png').convert_alpha()
+
+obstacle_rect_list = []
 
 player_surf = pygame.image.load('graphics/player/player_walk_1.png').convert_alpha()
 player_rect = player_surf.get_rect(midbottom=(80, 320))
@@ -37,8 +54,12 @@ player_dead_rect = player_dead.get_rect(center=(400, 200))
 game_name = test_font.render('You Have Died', True, (181, 2, 2))
 game_name_rect = game_name.get_rect(center=(400, 70))
 
-game_message = test_font.render('Press space to continue', False, (181, 2, 2))
-game_message_rect = game_message.get_rect(center=(400, 320))
+game_message = test_font.render('Press space to continue', True, (181, 2, 2))
+game_message_rect = game_message.get_rect(center=(400, 370))
+
+# Timer
+obstacle_timer = pygame.USEREVENT + 1
+pygame.time.set_timer(obstacle_timer, 1400)
 
 while True:
     for event in pygame.event.get():
@@ -53,8 +74,14 @@ while True:
         else:
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
                 game_active = True
-                scorpion_rect.left = 800
+
                 start_time = int(pygame.time.get_ticks() / 1000)
+
+        if event.type == obstacle_timer and game_active:
+            if randint(0,2):
+                obstacle_rect_list.append(scorpion_surf.get_rect(bottomright=(randint(900, 1100), 320)))
+            else:
+                obstacle_rect_list.append(beast_surf.get_rect(bottomright=(randint(900, 1100), 200)))
 
     if game_active:
         screen.blit(back_surface, (0, 0))
@@ -63,12 +90,12 @@ while True:
         # pygame.draw.rect(screen, 'Black', score_rect)
         # pygame.draw.rect(screen, 'Black', score_rect, 20)
         # screen.blit(score_surf, score_rect)
-        display_score()
+        score = display_score()
 
-        scorpion_rect.x -= 5
-        if scorpion_rect.right <= 0:
-            scorpion_rect.left = 800
-        screen.blit(scorpion_surf, scorpion_rect)
+        # scorpion_rect.x -= 5
+        # if scorpion_rect.right <= 0:
+        #     scorpion_rect.left = 800
+        # screen.blit(scorpion_surf, scorpion_rect)
 
         # Player
         player_gravity += 1
@@ -77,22 +104,21 @@ while True:
             player_rect.bottom = 320
         screen.blit(player_surf, player_rect)
 
+        # Obstacle movement
+        obstacle_rect_list = obstacle_movement(obstacle_rect_list)
+
         # collision
-        if scorpion_rect.colliderect(player_rect):
-            game_active = False
+
     else:
         screen.fill((47, 7, 99))
         screen.blit(player_dead, player_dead_rect)
+
+        score_message = test_font.render(f'Your score: {score}', True, (181, 2, 2))
+        score_message_rect = score_message.get_rect(center=(400, 320))
+        screen.blit(score_message, score_message_rect)
         screen.blit(game_name, game_name_rect)
         screen.blit(game_message, game_message_rect)
 
-
-    # keys = pygame.key.get_pressed()
-    # if keys[pygame.K_SPACE]:
-    #     print('jump')
-
-    # if player_rect.colliderect(scorpion_rect):
-    #     print('collision')
 
     pygame.display.update()
     clock.tick(60)
