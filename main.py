@@ -94,7 +94,7 @@ def obstacle_movement(obstacle_list):
             obstacle_rect.x -= 5
 
             if obstacle_rect.bottom == 320:
-                screen.blit(scorpion_surf, obstacle_rect)
+                screen.blit(fiend_surf, obstacle_rect)
             else:
                 screen.blit(beast_surf, obstacle_rect)
 
@@ -214,7 +214,7 @@ while True:
                 if fiend_frame_index == 0:
                     fiend_frame_index = 1
                 else: fiend_frame_index = 0
-                scorpion_surf = fiend_frames[fiend_frame_index]
+                fiend_surf = fiend_frames[fiend_frame_index]
 
     if game_active:
         screen.blit(back_surface, (0, 0))
